@@ -1,4 +1,5 @@
 import Control.Monad
+import Control.Monad.Writer
 
 
 data Exp = Lam String Exp
@@ -62,10 +63,16 @@ exps = [("id",     "λx.x"),
 type C_Program = [String]
 
 compile :: Exp -> C_Program
-compile _ = ["T anonymous1(T x) {",
-             "  return x;",
-             "}",
-             "T main = anonymous1;"]
+compile e = execWriter $ do c <- eval e
+                            write $ "T main = " ++ c ++ ";"
+            where
+  eval :: Exp -> Writer [String] String
+  eval _ = do write "T anonymous1(T x) {"
+              write "  return x;"
+              write "}"
+              return "anonymous1"
+  
+  write x = tell [x]
 
 
 print_indented :: String -> [String] -> IO ()
