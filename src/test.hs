@@ -61,23 +61,24 @@ exps = [("id",     "λx.x"),
 
 
 type C_Program = [String]
+type Compiler a = Writer C_Program a
 
 compile :: Exp -> C_Program
 compile e = execWriter $ do c <- eval e
                             write $ "T main = " ++ c ++ ";"
             where
-  eval :: Exp -> Writer [String] String
+  eval :: Exp -> Compiler String
   eval (Var "x") = return "x"
   eval _ = function "anonymous1" "x" (Var "x")
   
-  function :: String -> String -> Exp -> Writer [String] String
+  function :: String -> String -> Exp -> Compiler String
   function name param body = do write $ "T " ++ name ++ "(T " ++ param ++ ") {"
                                 b <- eval body
                                 write $ "  return " ++ b ++ ";"
                                 write $ "}"
                                 return name
   
-  write :: String -> Writer [String] ()
+  write :: String -> Compiler ()
   write x = tell [x]
 
 
