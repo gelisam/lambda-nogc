@@ -1,126 +1,108 @@
 id	λx.x
-       
-       
-    ***
-     * 
-     * 
+    T anonymous1(T x) {
+      return x;
+    }
+    T main = anonymous1;
+
 K/true	λx.λy.x
-       
-       
-    ***
-     * 
-    ***
-     * 
-     * 
+    T anonymous1(T y) {
+      return x;
+    }
+    T anonymous2(T x) {
+      return anonymous1;
+    }
+    T main = anonymous2;
+
 false	λx.λy.y
-       
-       
-    ***
-       
-    ***
-     * 
-     * 
+    T anonymous1(T y) {
+      return y;
+    }
+    T anonymous2(T x) {
+      return anonymous1;
+    }
+    T main = anonymous2;
+
 S	λx.λy.λz.(x z)(y z)
-                   
-                   
-    ***************
-     *             
-    ***************
-     *       *     
-    ***************
-     *   *   *   * 
-     *****   ***** 
-     *       *     
-     *********     
-     *             
-     *             
+    T anonymous1(T z) {
+      return x(z)(y(z));
+    }
+    T anonymous2(T y) {
+      return anonymous1;
+    }
+    T anonymous3(T x) {
+      return anonymous2;
+    }
+    T main = anonymous3;
+
 Y	λf.(λx.x x)(λx.f(x x))
-                       
-                       
-    *******************
-             *         
-    ******* ***********
-     *   *   *   *   * 
-     *****   *   ***** 
-     *       *   *     
-     *       *****     
-     *       *         
-     *********         
-     *                 
-     *                 
+    T anonymous1(T x) {
+      return x(x);
+    }
+    T anonymous2(T x) {
+      return f(x(x));
+    }
+    T anonymous3(T f) {
+      return anonymous1(anonymous2);
+    }
+    T main = anonymous3;
+
 2	λf.λx.f(f x)
-               
-               
-    ***********
-     *   *     
-    ***********
-     *   *   * 
-     *   ***** 
-     *   *     
-     *****     
-     *         
-     *         
+    T anonymous1(T x) {
+      return f(f(x));
+    }
+    T anonymous2(T f) {
+      return anonymous1;
+    }
+    T main = anonymous2;
+
 3	λf.λx.f(f(f x))
-                   
-                   
-    ***************
-     *   *   *     
-    ***************
-     *   *   *   * 
-     *   *   ***** 
-     *   *   *     
-     *   *****     
-     *   *         
-     *****         
-     *             
-     *             
+    T anonymous1(T x) {
+      return f(f(f(x)));
+    }
+    T anonymous2(T f) {
+      return anonymous1;
+    }
+    T main = anonymous2;
+
 4	λf.λx.f(f(f(f x)))
-                       
-                       
-    *******************
-     *   *   *   *     
-    *******************
-     *   *   *   *   * 
-     *   *   *   ***** 
-     *   *   *   *     
-     *   *   *****     
-     *   *   *         
-     *   *****         
-     *   *             
-     *****             
-     *                 
-     *                 
+    T anonymous1(T x) {
+      return f(f(f(f(x))));
+    }
+    T anonymous2(T f) {
+      return anonymous1;
+    }
+    T main = anonymous2;
+
 Ω	(λx.x x)(λx.x x)
-                   
-                   
-    ******* *******
-     *   *   *   * 
-     *****   ***** 
-     *       *     
-     *********     
-     *             
-     *             
+    T anonymous1(T x) {
+      return x(x);
+    }
+    T anonymous2(T x) {
+      return x(x);
+    }
+    T main = anonymous1(anonymous2);
+
 chrisdoner	λn.λf.λx.((n(λg.λh.h(g f)))(λu.x))(λu.u)
-                           
-                           
-    ***********************
-     *                     
-    ***********************
-     *           *         
-    ***********************
-     *           *   *     
-     *  *********** *** ***
-     *       *   *   *   * 
-     *  ***********  *   * 
-     *   *   *   *   *   * 
-     *   *   *****   *   * 
-     *   *   *       *   * 
-     *   *****       *   * 
-     *   *           *   * 
-     *****           *   * 
-     *               *   * 
-     *****************   * 
-     *                   * 
-     ********************* 
-     *                     
-     *                     
+    T anonymous1(T h) {
+      return h(g(f));
+    }
+    T anonymous2(T g) {
+      return anonymous1;
+    }
+    T anonymous3(T u) {
+      return x;
+    }
+    T anonymous4(T u) {
+      return u;
+    }
+    T anonymous5(T x) {
+      return n(anonymous2)(anonymous3)(anonymous4);
+    }
+    T anonymous6(T f) {
+      return anonymous5;
+    }
+    T anonymous7(T n) {
+      return anonymous6;
+    }
+    T main = anonymous7;
+
