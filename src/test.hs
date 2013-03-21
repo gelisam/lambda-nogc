@@ -1,5 +1,6 @@
 import Control.Monad
 import Control.Monad.Writer
+import Control.Monad.State
 
 
 data Exp = Lam String Exp
@@ -61,22 +62,25 @@ exps = [("id",     "λx.x"),
 
 
 type C_Program = [String]
-type Compiler a = Writer C_Program a
+type Compiler a = WriterT C_Program (State Int) a
 
 compile :: Exp -> C_Program
-compile e = execWriter $ do c <- eval e
-                            write $ "T main = " ++ c ++ ";"
+compile e = flip evalState 1 $ execWriterT $ do c <- eval e
+                                                write $ "T main = " ++ c ++ ";"
             where
   eval :: Exp -> Compiler String
   eval (Var "x") = return "x"
-  eval _ = function "anonymous1" "x" (Var "x")
+  eval _ = function "x" (Var "x")
   
-  function :: String -> String -> Exp -> Compiler String
-  function name param body = do write $ "T " ++ name ++ "(T " ++ param ++ ") {"
-                                b <- eval body
-                                write $ "  return " ++ b ++ ";"
-                                write $ "}"
-                                return name
+  function :: String -> Exp -> Compiler String
+  function param body = do n <- lift get
+                           lift $ put (n + 1)
+                           let name = "anonymous" ++ show n
+                           write $ "T " ++ name ++ "(T " ++ param ++ ") {"
+                           b <- eval body
+                           write $ "  return " ++ b ++ ";"
+                           write $ "}"
+                           return name
   
   write :: String -> Compiler ()
   write x = tell [x]
