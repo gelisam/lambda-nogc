@@ -1,4 +1,3 @@
-import Data.Monoid
 import Control.Monad
 
 
@@ -60,60 +59,20 @@ exps = [("id",     "λx.x"),
         ("chrisdoner", "λn.λf.λx.((n(λg.λh.h(g f)))(λu.x))(λu.u)")]
 
 
--- infinitely tall char blocks,
--- repeating after n lines
--- whose first line represents the given open vars.
-data Dia = Dia { openVars :: [String]
-               , height :: Int
-               , table :: [[Char]]
-               }
+type C_Program = [String]
 
-instance Monoid Dia where
-  mempty = Dia [] 0 []
-  mappend (Dia v1 h1 t1) (Dia v2 h2 t2) = Dia (v1 ++ v2)
-                                              (max h1 h2)
-                                              (zipWith (++) t1 t2)
+compile :: Exp -> C_Program
+compile _ = ["T anonymous1(T x) {",
+             "  return x;",
+             "}",
+             "T main = anonymous1;"]
 
-white :: Dia
-white = Dia [""] 0 $ repeat " "
 
-black :: String -> Dia
-black s = Dia ["", s, ""] 1 $ repeat " * "
-
-print_dia :: String -> Dia -> IO ()
-print_dia indent (Dia ss h xxs) = do putStr indent
-                                     forM_ ss $ \s -> do
-                                       if s == ""
-                                       then putStr " "
-                                       else putStr s
-                                     putStrLn ""
-                                     forM_ (take (h+1) xxs) $ \xs -> do
-                                       putStrLn $ indent ++ xs
-
-dia :: Exp -> Dia
-dia (Lam s x) = Dia ss' h' (xs':row:xs:xxs) where
-  Dia ss h (xs:xxs) = dia x
-  ss' = map drop_s ss
-  h' = h + 2
-  xs' = zipWith drop_s' ss xs
-  row = map (const '*') xs
-  drop_s  s2   = if s2 == s then "" else s2
-  drop_s' s2 x = if s2 == s then ' ' else x
-dia (Var s) = black s
-dia (App x y) = Dia ss h' xxs' where
-  Dia ss h xxs = dia x `mappend` white `mappend` dia y
-  w = length ss
-  h' = h + 2
-  xs = xxs !! h
-  (xs', _) = foldr connect ([], False) xs
-  connect '*' (xs, force_stars) = ('*':xs, not force_stars)
-  connect  _  (xs, True)        = ('*':xs, True)
-  connect  x  (xs, False)       = ( x :xs, False)
-  xs'' = take w $ takeWhile (== ' ') xs ++ "*" ++ repeat ' '
-  xxs' = take h xxs ++ [xs'] ++ repeat xs''
-
+print_indented :: String -> [String] -> IO ()
+print_indented indent = mapM_ putStrLn . map (indent++)
 
 main = forM_ exps $ \(name, s) -> do
   let e = read s :: Exp
   putStrLn $ name ++ "\t" ++ show e
-  print_dia "    " $ dia e
+  print_indented "    " $ compile e
+  putStrLn ""
