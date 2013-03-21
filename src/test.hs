@@ -67,11 +67,17 @@ compile e = execWriter $ do c <- eval e
                             write $ "T main = " ++ c ++ ";"
             where
   eval :: Exp -> Writer [String] String
-  eval _ = do write "T anonymous1(T x) {"
-              write "  return x;"
-              write "}"
-              return "anonymous1"
+  eval (Var "x") = return "x"
+  eval _ = function "anonymous1" "x" (Var "x")
   
+  function :: String -> String -> Exp -> Writer [String] String
+  function name param body = do write $ "T " ++ name ++ "(T " ++ param ++ ") {"
+                                b <- eval body
+                                write $ "  return " ++ b ++ ";"
+                                write $ "}"
+                                return name
+  
+  write :: String -> Writer [String] ()
   write x = tell [x]
 
 
